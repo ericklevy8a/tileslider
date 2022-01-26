@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Switcher</title>
+    <link type="image/x-icon" rel="icon" href="favicon.ico">
+    <link type="text/css" rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+    <header>
+        <h1 id="appLongName">The Switcher Game</h1>
+        <label id="lblText">Press the START button...</label>
+    </header>
+
+    <main>
+        <table>
+            <tr>
+                <td><img class="btn" id="btnSwitch1"></td>
+                <td><img class="btn" id="btnSwitch2"></td>
+                <td><img class="btn" id="btnSwitch3"></td>
+            </tr>
+            <tr>
+                <td><img class="btn" id="btnSwitch4"></td>
+                <td><img class="btn" id="btnSwitch5"></td>
+                <td><img class="btn" id="btnSwitch6"></td>
+            </tr>
+            <tr>
+                <td><img class="btn" id="btnSwitch7"></td>
+                <td><img class="btn" id="btnSwitch8"></td>
+                <td><img class="btn" id="btnSwitch9"></td>
+            </tr>
+        </table>
+    </main>
+
+    <nav>
+        <img id="btnHelp" class="icon" title="Help" src=".\img\ic_app_help.png"></img>
+        <img id="btnAbout" class="icon" title="About" src=".\img\ic_app_info.png"></img>
+        <button id="btnStart">Start</button>
+        <img id="btnStats" class="icon" title="Statistics" src=".\img\ic_app_stats.png"></img>
+        <img id="btnConfig" class="icon" title="Configuration" src=".\img\ic_app_config.png"></img>
+    </nav>
+
+    <aside id="myModal" class="modal">
+        <section class="modal-content">
+
+            <article id="msgbox">
+                <h2 id="hText"></h2>
+                <p id="pText"></p>
+                <nav id="msgboxButtons">
+                </nav>
+            </article>
+
+            <article id="configbox">
+                <h2 id="configboxTitle"></h2>
+                <label id="configboxPlaySoundsLabel"></label>
+                <img id="imgPlaySounds">
+                <br>
+                <label id="configboxSwitchStyleLabel"></label>
+                <div id="configboxSwitchStyleOptions"></div>
+                <br>
+                <label id="configboxColorSchemeLabel"></label>
+                <div id="configboxColorSchemeOptions"></div>
+                <br>
+                <nav>
+                    <button id="configboxOk"></button>
+                </nav>
+            </article>
+
+            <article id="statsbox">
+                <h2 id="statsboxTitle"></h2>
+                <label id="statsboxGamesLabel"></label>
+                <div id="statsboxGames"></div>
+                <br>
+                <label id="statsboxGraphLabel"></label>
+                <div id="statsboxGraph"></div>
+                <br>
+                <nav>
+                    <button id="statsboxOk"></button>
+                </nav>
+            </article>
+
+        </section>
+    </aside>
+
+</body>
+<script src="./config.js"></script>
+<script src="./strings.js"></script>
+<script src="./switcher.js"></script>
+
+</html>

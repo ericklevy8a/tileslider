@@ -1,0 +1,190 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: black;
+    color: white;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header h1 {
+    border-bottom: 1px darkgray solid;
+}
+
+header label {
+    margin-top: 0.5em;
+}
+
+main {
+    align-items: center;
+    justify-content: center;
+    margin: 32px;
+}
+
+main img.btn {
+    width: 100px;
+    height: 100px;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+nav button {
+    padding: 8px;
+    margin-left: 4px;
+    text-transform: uppercase;
+    background-color: darkgrey;
+    border-radius: 0.5em;
+    border: none;
+}
+
+nav button:hover {
+    background-color: white;
+}
+
+nav button#btnStart {
+    width: 180px;
+    margin: 0 8px;
+}
+
+img.icon {
+    height: 24px;
+    width: 24px;
+    filter: brightness(0.5);
+    margin: 0 4px;
+}
+
+img.icon:hover {
+    filter: brightness(1);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: black;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+article {
+    display: none;
+    background-color: #666;
+    padding: 20px;
+    border: 1px solid white;
+    border-radius: 0.5em;
+    width: 360px;
+}
+
+article h2 {
+    margin-bottom: 1em;
+}
+
+article p {
+    margin-bottom: 2em;
+}
+
+article nav {
+    width: 100%;
+    justify-content: right;
+}
+
+#configbox {
+    background-color: #333;
+}
+
+#configbox label {
+    display: block;
+}
+
+#configbox img {
+    display: inline-block;
+    width: 4em;
+    height: 4em;
+    margin: 0.5em;
+    padding: 0.5em;
+}
+
+#configbox img.selected {
+    background-color: #ccc;
+    border-radius: 0.5em;
+}
+
+#statsbox #statsboxGames {
+    display: flex;
+    flex-direction: row;
+}
+
+#statsbox #statsboxGames .stats-container {
+    display: flex;
+    flex-direction: column;
+    width: 33%;
+}
+
+#statsbox #statsboxGames .label {
+    text-align: center;
+}
+
+#statsbox #statsboxGames .value {
+    font-size: 36px;
+    font-weight: 500;
+    text-align: center;
+}
+
+#statsbox #statsboxGraph .bar-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+#statsbox #statsboxGraph .label {
+    width: 24px;
+    text-align: center;
+}
+
+#statsbox #statsboxGraph .bar {
+    min-width: 16px;
+    background-color: #ccc;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+}
+
+#statsbox #statsboxGraph .value {
+    color: #333;
+    font-weight: bold;
+    padding: 2px;
+}
