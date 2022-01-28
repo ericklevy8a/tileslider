@@ -18,12 +18,11 @@ Try to do it without going over nine steps!
 
 Some of the frontend elements used in this little project:
 * HTML5 semantic web tags
-* DOM elements referencing and manipulation
+* Javascript referencing and manipulation of DOM elements 
 * CSS3 flex displaying and distribution
 * Custom modal windows for alerts and dialogs
-* Image manipulation and sound playing
+* Javascript image manipulation and sound playing
 * Dynamic CSS class assignment
-* Change the default Font Family
 * Using local storage to save game settings and statistics
-* Collections, event listeners, timers, lamdas
+* Javascript collections, event listeners, timers, lambdas
 * And so on...
