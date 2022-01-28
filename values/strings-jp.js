@@ -9,9 +9,14 @@ const strings = {
     btnOk: 'わかった',
     btnCancel: 'キャンセル',
     configboxTitle: '構成',
-    configboxPlaySounds: '音を鳴らす',
-    configboxSwitchStyle: 'スタイルを選択',
-    configboxColorScheme: '色を選択',
+    configboxPlaySoundsLabel: '音を鳴らす：',
+    configboxSwitchStyleLabel: 'スタイルを選択：',
+    configboxColorSchemeLabel: '色を選択：',
+    statsboxTitle: '統計学',
+    statsboxGamesLabel: 'ゲーム：',
+    gamesPlayed: 'プレイした',
+    gamesWinned: '勝った',
+    statsboxGraphLabel: 'ステップ分布グラフ：',
     helpTitle: '遊び方',
     helpMessage: `このゲームの目的は、9つのスイッチすべてを<b>オンにする</ b>ことです。<br><br>
     スイッチを変更すると、隣接するスイッチも変更されます

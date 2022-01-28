@@ -12,6 +12,11 @@ const strings = {
     configboxPlaySounds: 'Jouer des sons:',
     configboxSwitchStyle: 'Style:',
     configboxColorScheme: 'Couleur:',
+    statsboxTitle: 'Statistiques',
+    statsboxGamesLabel: 'Jeux:',
+    gamesPlayed: 'Joués',
+    gamesWinned: 'Gagnés',
+    statsboxGraphLabel: 'Graphique de distribution des étapes:',
     helpTitle: 'Comment jouer',
     helpMessage: `Le but de ce jeu est <b>d'allumer</b> les neuf interrupteurs.<br><br>
         La modification d'un interrupteur modifie également les interrupteurs adjacents
