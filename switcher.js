@@ -441,18 +441,21 @@ function statsboxOpen() {
 function updateStats() {
     // Games
     const statsboxGames = document.getElementById('statsboxGames');
+    const played = localStorage.getItem('gamesPlayed') || 0;
+    const won = localStorage.getItem('gamesWinned') || 0;
+    const percent = (played > 0) ? Math.round(100 * won / played) : 0;
     const stats = {
         'gamesPlayed': {
             'label': strings.gamesPlayed || 'Played',
-            'value': localStorage.getItem('gamesPlayed') || 0
+            'value': played
         },
         'gamesWinned': {
             'label': strings.gamesWinned || 'Winned',
-            'value': localStorage.getItem('gamesWinned') || 0
+            'value': won
         },
         'porcWinned': {
             'label': strings.gamesPercentage || 'Percentage',
-            'value': Math.round(100 * localStorage.getItem('gamesWinned') / localStorage.getItem('gamesPlayed')) + '%'
+            'value': percent + '%'
         }
     };
     statsboxGames.innerHTML = '';
