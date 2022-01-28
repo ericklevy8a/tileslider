@@ -2,8 +2,8 @@
  * The Switcher Game
  * Javascript code
  * @author Erick Levy <erickevyATgmailDOTcom>
- * @requires config.js
- * @requires strings.js
+ * @requires config.js The file with the structure for configuration's options (loaded in index.html)
+ * @requires strings-xx.js The file with the languaje localized strings where xx: language code [en, es, fr, jp, ...]
  */
 
 // Some Constants
@@ -66,13 +66,13 @@ const btnSwitch9 = document.getElementById('btnSwitch9');
 function run() {
 
     // Load strings
-    lblText.innerText = strings.pressStart;
-    appLongName.innerText = strings.appLongName;
-    btnHelp.title = strings.btnHelp;
-    btnAbout.title = strings.btnAbout;
-    btnStats.title = strings.btnStats;
-    btnConfig.title = strings.btnConfig;
-    btnStart.innerText = strings.btnStart;
+    lblText.innerText = strings.pressStart || 'Press the START button...';
+    appLongName.innerText = strings.appLongName || 'The Switcher Game';
+    btnHelp.title = strings.btnHelp || 'Help';
+    btnAbout.title = strings.btnAbout || 'About';
+    btnStats.title = strings.btnStats || 'Statistics';
+    btnConfig.title = strings.btnConfig || 'Configuration';
+    btnStart.innerText = strings.btnStart || 'Start';
 
     // Prepare event listeners
     btnStart.addEventListener('click', btnStartOnClick);
