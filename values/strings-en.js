@@ -1,6 +1,6 @@
 const strings = {
-    appTitle: 'Switcher',
-    appLongName: 'The Switcher Game',
+    appTitle: 'TileSlider',
+    appLongName: 'The Tile Slider Game',
     btnStart: 'Start',
     btnHelp: 'Help',
     btnAbout: 'About',
@@ -18,12 +18,12 @@ const strings = {
     gamesWinned: 'Won',
     statsboxGraphLabel: 'Steps Distribution Graph:',
     helpTitle: 'How to Play',
-    helpMessage: `The goal of this game is to <b>TURN ON</b> all the nine switches.<br><br>
-        Changing a switch also changes the adjacent switches
-        (top, bottom and sides, not diagonally).<br><br>
-        <b>Try to do it without going over nine steps!</b>`,
+    helpMessage: `The goal of this game is to <b>PUT IN ORDER</b> all the tiles.<br><br>
+        You can only move the pieces to the only available space.<br><br>
+        The game will end when all the pieces are arranged.<br><br>
+        <b>Try to do it in the shortest possible time!</b>`,
     aboutTitle: 'About the Game',
-    aboutMessage: `© Copyright 2019 by Erick Levy<br><br>
+    aboutMessage: `© Copyright 2021 by Erick Levy<br><br>
         This is a remake of an old simple game coded first in Java for Android,
         and ported to <b>HTML5, CSS3 and Javacript</b> for my web skills test area.<br><br>
         Thank you for taking the time to learn about and play with this little app.`,

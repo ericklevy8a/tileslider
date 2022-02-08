@@ -24,7 +24,8 @@ var imageOn = imagePath + config.styles[switchStyle].colors[colorScheme].on;
 var imageOff = imagePath + config.styles[switchStyle].colors[colorScheme].off;
 
 // Default button sound
-var soundClick = soundPath + config.styles[switchStyle].sound;
+var soundClick = soundPath + 'switch_tone.mp3';
+var soundError = soundPath + 'buzzing_tone.mp3';
 
 // Other sounds
 var soundStart = soundPath + 'start_sound.mp3';
@@ -33,7 +34,7 @@ var soundGameOver = soundPath + 'game_over_sound.mp3';
 
 // Collecions
 
-var allButtons = new Array();
+var allTiles = new Array();
 
 // Game control global variables
 
@@ -52,15 +53,7 @@ const btnAbout = document.getElementById('btnAbout');
 const btnStats = document.getElementById('btnStats');
 const btnConfig = document.getElementById('btnConfig');
 
-const btnSwitch1 = document.getElementById('btnSwitch1');
-const btnSwitch2 = document.getElementById('btnSwitch2');
-const btnSwitch3 = document.getElementById('btnSwitch3');
-const btnSwitch4 = document.getElementById('btnSwitch4');
-const btnSwitch5 = document.getElementById('btnSwitch5');
-const btnSwitch6 = document.getElementById('btnSwitch6');
-const btnSwitch7 = document.getElementById('btnSwitch7');
-const btnSwitch8 = document.getElementById('btnSwitch8');
-const btnSwitch9 = document.getElementById('btnSwitch9');
+const gameboardContainer = document.getElementById('gameboard-container');
 
 // Initialization of the DOM interface
 function run() {
@@ -81,35 +74,59 @@ function run() {
     btnStats.addEventListener('click', btnStatsOnClick);
     btnConfig.addEventListener('click', btnConfigOnClick);
 
-    btnSwitch1.addEventListener('click', btnSwitch1OnClick);
-    btnSwitch2.addEventListener('click', btnSwitch2OnClick);
-    btnSwitch3.addEventListener('click', btnSwitch3OnClick);
-    btnSwitch4.addEventListener('click', btnSwitch4OnClick);
-    btnSwitch5.addEventListener('click', btnSwitch5OnClick);
-    btnSwitch6.addEventListener('click', btnSwitch6OnClick);
-    btnSwitch7.addEventListener('click', btnSwitch7OnClick);
-    btnSwitch8.addEventListener('click', btnSwitch8OnClick);
-    btnSwitch9.addEventListener('click', btnSwitch9OnClick);
-
     gameInitialize();
 }
 
 // Game initialization
 function gameInitialize() {
-    allButtons = new Array();
-    allButtons.push(btnSwitch1);
-    allButtons.push(btnSwitch2);
-    allButtons.push(btnSwitch3);
-    allButtons.push(btnSwitch4);
-    allButtons.push(btnSwitch5);
-    allButtons.push(btnSwitch6);
-    allButtons.push(btnSwitch7);
-    allButtons.push(btnSwitch8);
-    allButtons.push(btnSwitch9);
-    allButtons.forEach(element => {
-        element.src = imageOn;
-        element.tag = buttonOn;
-    });
+    // Gameboard setup
+    let rows = sessionStorage.getItem('rows') || 4;
+    let cols = sessionStorage.getItem('cols') || 4;
+    let span = sessionStorage.getItem('span') || 0;
+    //
+    allTiles = new Array(rows);
+    // Calculate tile size
+    let tileWidth = Math.floor((gameboardContainer.offsetWidth - (span * (cols - 1))) / cols);
+    let tileHeight = Math.floor((gameboardContainer.offsetHeight - (span * (rows - 1))) / rows);
+    // Adjust the number of columns per row in the style grid template
+    gameboardContainer.style.gridTemplateColumns = 'repeat(' + cols + ', 1fr)'
+    // Create all tiles one by one (by row and column)
+    for (var r = 0; r < rows; r++) {
+        allTiles[r] = new Array(cols);
+        for (var c = 0; c < cols; c++) {
+            // Create a button as the tile element
+            var tile = document.createElement('button');
+            let i = rows * r + c + 1;
+            tile.innerText = i;
+            tile.value = i;
+            tile.style.width = tileWidth + 'px';
+            tile.style.height = tileHeight + 'px';
+            tile.style.top = (r * (tileHeight + span)) + 'px';
+            tile.style.left = (c * (tileWidth + span)) + 'px';
+            tile.dataset.row = r;
+            tile.dataset.col = c;
+            // Id's for the tiles and last tile Id
+            if (i < rows * cols) {
+                tile.id = 'tile-' + i;
+            } else {
+                tile.id = 'tile-last';
+            }
+            // Light-dark pattern
+            tile.classList.add('tile');
+            if ((r + c + 1) % 2 == 0) {
+                tile.classList.add('tile-dark');
+            }
+            // Assign the tile click handler
+            tile.addEventListener('click', tileButtonOnClick);
+            // Append the button to the UI and to the control collection
+            gameboardContainer.appendChild(tile);
+            allTiles[r][c] = tile;
+        }
+    }
+}
+
+function tileButtonOnClick(e) {
+    slideTile(e.target);
 }
 
 function btnHelpOnClick() {
@@ -148,7 +165,7 @@ function msgboxRestart(e) {
 }
 
 function restartGame() {
-    randomizeButtons();
+    scrambleTiles();
     giSteps = 0;
     lblText.textContent = strings.lblSteps.replace('?', giSteps);
     gbGameOver = false;
@@ -158,42 +175,66 @@ function restartGame() {
     localStorage.setItem('gamesPlayed', ++gamesPlayed);
 }
 
-function randomizeButtons() {
-    allButtons.forEach(element => {
-        if (Math.random() < 0.5) {
-            element.src = imageOff;
-            element.tag = buttonOff;
-        } else {
-            element.src = imageOn;
-            element.tag = buttonOn;
-        }
-    });
+function scrambleTiles() {
+    // ToDo: Scramble tiles
+    // Randomize order of tiles
+    // Check if this order is not the solution or something trivial (number of twists > n)
+    //redrawTiles()
+    document.getElementById('tile-last').classList.add('hide');
 }
 
-function redrawButtons() {
-    soundClick = soundPath + config.styles[switchStyle].sound;
-    imageOn = imagePath + config.styles[switchStyle].colors[colorScheme].on;
-    imageOff = imagePath + config.styles[switchStyle].colors[colorScheme].off;
-    allButtons.forEach(element => {
-        if (element.tag === buttonOff) {
-            element.src = imageOff;
-            element.tag = buttonOff;
-        } else {
-            element.src = imageOn;
-            element.tag = buttonOn;
-        }
-    });
-}
-
-function switchButton(button) {
-    let element = allButtons[button - 1];
-    if (element.tag === buttonOff) {
-        element.src = imageOn;
-        element.tag = buttonOn;
+function slideTile(tile) {
+    let lastTile = document.getElementById('tile-last');
+    let tR = tile.dataset.row - 0;
+    let tC = tile.dataset.col - 0;
+    var dR = lastTile.dataset.row - tR;
+    var dC = lastTile.dataset.col - tC;
+    if ((dR == 0 && dC == 0) || (dR !== 0 && dC !== 0)) {
+        // Invalid slide
+        playSound(soundError);
     } else {
-        element.src = imageOff;
-        element.tag = buttonOff;
+        playSound(soundClick);
+        if (dR != 0) {
+            // Row slide
+            let sR = Math.sign(dR);
+            while (dR != 0) {
+                let tile1 = allTiles[tR + dR][tC];
+                let tile2 = allTiles[tR + dR - sR][tC];
+                swapTiles(tile1, tile2);
+                dR -= sR;
+            }
+        } else {
+            // Column slide
+            let sC = Math.sign(dC);
+            while (dC != 0) {
+                let tile1 = allTiles[tR][tC + dC];
+                let tile2 = allTiles[tR][tC + dC - sC];
+                swapTiles(tile1, tile2);
+                dC -= sC;
+            }
+        }
     }
+}
+
+function swapTiles(tile1, tile2) {
+    // Swap array position
+    let tileTemp = tile1;
+    let rowTemp = tile1.dataset.row;
+    let colTemp = tile1.dataset.col;
+    let topTemp = tile1.style.top;
+    let leftTemp = tile1.style.left;
+    allTiles[tile1.dataset.row][tile1.dataset.col] = tile2;
+    allTiles[tile2.dataset.row][tile2.dataset.col] = tileTemp;
+    // Swap rows and cols
+    tile1.dataset.row = tile2.dataset.row;
+    tile2.dataset.row = rowTemp;
+    tile1.dataset.col = tile2.dataset.col;
+    tile2.dataset.col = colTemp;
+    // Change positions in the gameboard
+    tile1.style.left = tile2.style.left;
+    tile2.style.left = leftTemp;
+    tile1.style.top = tile2.style.top;
+    tile2.style.top = topTemp;
 }
 
 function switchButtons(buttons) {
@@ -208,54 +249,19 @@ function switchButtons(buttons) {
     }
 }
 
-function btnSwitch1OnClick() {
-    switchButtons([1, 2, 4]);
-}
-
-function btnSwitch2OnClick() {
-    switchButtons([2, 1, 3, 5]);
-}
-
-function btnSwitch3OnClick() {
-    switchButtons([3, 2, 6]);
-}
-
-function btnSwitch4OnClick() {
-    switchButtons([4, 1, 5, 7]);
-}
-
-function btnSwitch5OnClick() {
-    switchButtons([5, 2, 4, 6, 8]);
-}
-
-function btnSwitch6OnClick() {
-    switchButtons([6, 3, 5, 9]);
-}
-
-function btnSwitch7OnClick() {
-    switchButtons([7, 4, 8]);
-}
-
-function btnSwitch8OnClick() {
-    switchButtons([8, 5, 7, 9]);
-}
-
-function btnSwitch9OnClick() {
-    switchButtons([9, 6, 8]);
-}
-
 function updateSteps() {
     giSteps++;
     lblText.textContent = strings.lblSteps.replace('?', giSteps);
-    checkButtons();
+    checkTiles();
     if (gbGameOver) {
         displayGameOver();
     }
 }
 
-function checkButtons() {
+function checkTiles() {
     gbGameOver = true;
     allButtons.forEach(element => {
+        // ToDo: Test for game over or not
         if (element.tag === false) {
             gbGameOver = false;
         }
@@ -415,7 +421,7 @@ function imgColorOptionOnClick(e) {
 function configboxClose() {
     const modal = document.getElementById('myModal');
     const configbox = document.getElementById('configbox');
-    redrawButtons();
+    //redrawButtons();
     modal.style.display = 'none';
     configbox.style.display = 'none';
 }

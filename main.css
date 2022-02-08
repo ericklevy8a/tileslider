@@ -29,16 +29,38 @@ header label {
     margin-top: 0.5em;
 }
 
-main {
-    align-items: center;
-    justify-content: center;
+/* GAME BOARD */
+
+#gameboard-container {
+    position: relative;
+    width: 400px;
+    height: 400px;
     margin: 32px;
 }
 
-main img.btn {
+#gameboard-container .tile {
     width: 100px;
     height: 100px;
+    font-size: 66px;
+    position: absolute;
+    background: #000 url('./img/tile-light.png');
+    background-size: 100% 100%;
+    border: none;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: 600;
+    text-shadow: #ccc 1px 1px 2px, #000 -1px -1px 2px;
+    color: #963;
 }
+
+#gameboard-container .tile-dark {
+    background-image: url('./img/tile-dark.png');
+}
+
+#gameboard-container .hide {
+    visibility: hidden;
+}
+
+/* BUTTON BAR */
 
 nav {
     display: flex;
@@ -75,6 +97,10 @@ img.icon {
 img.icon:hover {
     filter: brightness(1);
 }
+
+/*
+    SECTION FOR MODAL BOX DISPLAY
+*/
 
 .modal {
     display: none;
@@ -119,6 +145,8 @@ article nav {
     justify-content: right;
 }
 
+/* CONFIG BOX */
+
 #configbox {
     background-color: #333;
 }
@@ -139,6 +167,8 @@ article nav {
     background-color: #ccc;
     border-radius: 0.5em;
 }
+
+/* STATS BOX */
 
 #statsbox #statsboxGames {
     display: flex;
@@ -188,3 +218,5 @@ article nav {
     font-weight: bold;
     padding: 2px;
 }
+
+/* End of Code */
