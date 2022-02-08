@@ -1,4 +1,4 @@
-# switcher
+# tileslider
 
 The Tile Slider Game
 
