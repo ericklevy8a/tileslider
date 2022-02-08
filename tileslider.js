@@ -6,9 +6,14 @@
  * @requires strings-xx.js The file with the languaje localized strings where xx: language code [en, es, fr, jp, ...]
  */
 
+// Gameboard setup
+let giRows = sessionStorage.getItem('rows') || 4;
+let giCols = sessionStorage.getItem('cols') || 4;
+let giSpan = sessionStorage.getItem('span') || 1;
+
 // Some Constants
-const buttonOff = false;
-const buttonOn = true;
+const levelFactor = 2; // 1: Easy, 2: Normal, 3: Hard
+const levelMovs = levelFactor * giRows * giCols;
 
 // Some paths
 const imagePath = './img/';
@@ -16,12 +21,8 @@ const soundPath = './raw/';
 
 // Some defaults
 var gbPlaySounds = (localStorage.getItem('playSounds') === 'true');
-var switchStyle = localStorage.getItem('switchStyle') || "sw";
-var colorScheme = localStorage.getItem('colorScheme') || "grn_red";
-
-// Default button images
-var imageOn = imagePath + config.styles[switchStyle].colors[colorScheme].on;
-var imageOff = imagePath + config.styles[switchStyle].colors[colorScheme].off;
+var tileStyle = localStorage.getItem('tileStyle') || "wood";
+var colorScheme = localStorage.getItem('colorScheme') || "brown";
 
 // Default button sound
 var soundClick = soundPath + 'switch_tone.mp3';
@@ -80,10 +81,10 @@ function run() {
 // Game initialization
 function gameInitialize() {
     // Gameboard setup
-    let rows = sessionStorage.getItem('rows') || 4;
-    let cols = sessionStorage.getItem('cols') || 4;
-    let span = sessionStorage.getItem('span') || 0;
-    //
+    let rows = giRows;
+    let cols = giCols;
+    let span = giSpan;
+    // Initialize the tile matrix
     allTiles = new Array(rows);
     // Calculate tile size
     let tileWidth = Math.floor((gameboardContainer.offsetWidth - (span * (cols - 1))) / cols);
@@ -126,7 +127,10 @@ function gameInitialize() {
 }
 
 function tileButtonOnClick(e) {
-    slideTile(e.target);
+    if (!gbGameOver) {
+        slideTiles(e.target);
+        updateSteps();
+    }
 }
 
 function btnHelpOnClick() {
@@ -165,10 +169,10 @@ function msgboxRestart(e) {
 }
 
 function restartGame() {
-    scrambleTiles();
+    do { scrambleTiles() } while (checkTiles() < ((giRows + giCols) / 2));
+    gbGameOver = false;
     giSteps = 0;
     lblText.textContent = strings.lblSteps.replace('?', giSteps);
-    gbGameOver = false;
     playSound(soundStart);
     // Increment the games played counter
     let gamesPlayed = localStorage.getItem('gamesPlayed') || 0;
@@ -176,14 +180,33 @@ function restartGame() {
 }
 
 function scrambleTiles() {
-    // ToDo: Scramble tiles
-    // Randomize order of tiles
-    // Check if this order is not the solution or something trivial (number of twists > n)
-    //redrawTiles()
+    let tempPlaySounds = gbPlaySounds;
+    gbPlaySounds = false;
+    for (var i = 0; i <= levelMovs; i++) {
+        let last = document.getElementById('tile-last');
+        let row = parseInt(last.dataset.row);
+        let col = parseInt(last.dataset.col);
+        if (Math.random() < 0.5) {
+            // Same row random col
+            let colRnd = col;
+            while (colRnd == col) {
+                colRnd = Math.floor(giCols * Math.random());
+            }
+            slideTiles(allTiles[row][colRnd]);
+        } else {
+            // Random row same col
+            let rowRnd = row;
+            while (rowRnd == row) {
+                rowRnd = Math.floor(giRows * Math.random());
+            }
+            slideTiles(allTiles[rowRnd][col]);
+        }
+    }
+    gbPlaySounds = tempPlaySounds;
     document.getElementById('tile-last').classList.add('hide');
 }
 
-function slideTile(tile) {
+function slideTiles(tile) {
     let lastTile = document.getElementById('tile-last');
     let tR = tile.dataset.row - 0;
     let tC = tile.dataset.col - 0;
@@ -237,40 +260,35 @@ function swapTiles(tile1, tile2) {
     tile2.style.top = topTemp;
 }
 
-function switchButtons(buttons) {
-    if (!gbGameOver) {
-        if (Array.isArray(buttons)) {
-            buttons.forEach(element => {
-                switchButton(element);
-            });
-            updateSteps();
-            playSound(soundClick);
-        }
-    }
-}
-
 function updateSteps() {
     giSteps++;
     lblText.textContent = strings.lblSteps.replace('?', giSteps);
-    checkTiles();
+    gbGameOver = (checkTiles() == 0);
     if (gbGameOver) {
+        document.getElementById('tile-last').classList.remove('hide');
         displayGameOver();
     }
 }
 
 function checkTiles() {
     gbGameOver = true;
-    allButtons.forEach(element => {
-        // ToDo: Test for game over or not
-        if (element.tag === false) {
-            gbGameOver = false;
-        }
+    let last = 0;
+    let retval = 0;
+    allTiles.forEach(row => {
+        row.forEach(tile => {
+            let value = parseInt(tile.value);
+            if (value < last) {
+                retval++;
+            }
+            last = value;
+        });
     });
+    return retval;
 }
 
 function displayGameOver() {
     let msg = strings.gameOverScore.replace('?', giSteps);
-    if (giSteps <= 9) {
+    if (giSteps <= levelMovs) {
         playSound(soundWinner);
         msg += strings.gameOverWin;
         // Store the step counter for stats
@@ -375,16 +393,16 @@ function updateStyleOptions() {
     let styleOptions = document.getElementById('configboxSwitchStyleOptions');
     styleOptions.innerHTML = '';
     Object.keys(config.styles).forEach(element => {
-        let img = document.createElement('img');
-        img.tag = element;
-        img.src = imagePath + config.styles[element].cover;
-        img.title = config.styles[element].title;
-        if (element === switchStyle) {
-            img.classList.add('selected');
-        } else {
-            img.addEventListener('click', imgStyleOptionOnClick);
-        }
-        styleOptions.appendChild(img);
+        // let img = document.createElement('img');
+        // img.tag = element;
+        // img.src = imagePath + config.styles[element].cover;
+        // img.title = config.styles[element].title;
+        // if (element === switchStyle) {
+        //     img.classList.add('selected');
+        // } else {
+        //     img.addEventListener('click', imgStyleOptionOnClick);
+        // }
+        // styleOptions.appendChild(img);
     });
 }
 
@@ -396,20 +414,20 @@ function imgStyleOptionOnClick(e) {
 }
 
 function updateColorOptions() {
-    let colorOptions = document.getElementById('configboxColorSchemeOptions');
-    colorOptions.innerHTML = '';
-    Object.keys(config.styles[switchStyle].colors).forEach(element => {
-        let img = document.createElement('img');
-        img.tag = element;
-        img.src = imagePath + config.styles[switchStyle].colors[element].on;
-        img.title = config.styles[switchStyle].colors[element].title;
-        if (element === colorScheme) {
-            img.classList.add('selected');
-        } else {
-            img.addEventListener('click', imgColorOptionOnClick);
-        }
-        colorOptions.appendChild(img);
-    });
+    // let colorOptions = document.getElementById('configboxColorSchemeOptions');
+    // colorOptions.innerHTML = '';
+    // Object.keys(config.styles[switchStyle].colors).forEach(element => {
+    //     let img = document.createElement('img');
+    //     img.tag = element;
+    //     img.src = imagePath + config.styles[switchStyle].colors[element].on;
+    //     img.title = config.styles[switchStyle].colors[element].title;
+    //     if (element === colorScheme) {
+    //         img.classList.add('selected');
+    //     } else {
+    //         img.addEventListener('click', imgColorOptionOnClick);
+    //     }
+    //     colorOptions.appendChild(img);
+    // });
 }
 
 function imgColorOptionOnClick(e) {
@@ -445,67 +463,67 @@ function statsboxOpen() {
 }
 
 function updateStats() {
-    // Games
-    const statsboxGames = document.getElementById('statsboxGames');
-    const played = localStorage.getItem('gamesPlayed') || 0;
-    const won = localStorage.getItem('gamesWinned') || 0;
-    const percent = (played > 0) ? Math.round(100 * won / played) : 0;
-    const stats = {
-        'gamesPlayed': {
-            'label': strings.gamesPlayed || 'Played',
-            'value': played
-        },
-        'gamesWinned': {
-            'label': strings.gamesWinned || 'Winned',
-            'value': won
-        },
-        'porcWinned': {
-            'label': strings.gamesPercentage || 'Percentage',
-            'value': percent + '%'
-        }
-    };
-    statsboxGames.innerHTML = '';
-    Object.keys(stats).forEach(element => {
-        let div = document.createElement('div');
-        let label = document.createElement('div');
-        let value = document.createElement('div');
-        div.classList.add('stats-container');
-        label.classList.add('label');
-        value.classList.add('value');
-        label.innerText = stats[element].label;
-        value.innerText = stats[element].value;
-        div.appendChild(value);
-        div.appendChild(label);
-        statsboxGames.appendChild(div);
-    });
-    // Graph
-    const statsboxGraph = document.getElementById('statsboxGraph');
-    statsboxGraph.innerHTML = '';
-    let maxCount = 0;
-    for (i = 1; i <= 9; i++) {
-        let actualCount = localStorage.getItem('stepsCount' + i) || 0;
-        if (actualCount > maxCount) {
-            maxCount = actualCount;
-        }
-    }
-    for (i = 1; i <= 9; i++) {
-        let div = document.createElement('div');
-        let label = document.createElement('div');
-        let bar = document.createElement('div');
-        let value = document.createElement('div');
-        div.classList.add('bar-container');
-        label.classList.add('label');
-        bar.classList.add('bar');
-        value.classList.add('value');
-        let actualCount = localStorage.getItem('stepsCount' + i) || 0;
-        label.innerText = i;
-        bar.style.width = Math.floor(90 * actualCount / maxCount) + '%';
-        value.innerText = actualCount;
-        div.appendChild(label);
-        bar.appendChild(value);
-        div.appendChild(bar);
-        statsboxGraph.appendChild(div);
-    }
+    // // Games
+    // const statsboxGames = document.getElementById('statsboxGames');
+    // const played = localStorage.getItem('gamesPlayed') || 0;
+    // const won = localStorage.getItem('gamesWinned') || 0;
+    // const percent = (played > 0) ? Math.round(100 * won / played) : 0;
+    // const stats = {
+    //     'gamesPlayed': {
+    //         'label': strings.gamesPlayed || 'Played',
+    //         'value': played
+    //     },
+    //     'gamesWinned': {
+    //         'label': strings.gamesWinned || 'Winned',
+    //         'value': won
+    //     },
+    //     'porcWinned': {
+    //         'label': strings.gamesPercentage || 'Percentage',
+    //         'value': percent + '%'
+    //     }
+    // };
+    // statsboxGames.innerHTML = '';
+    // Object.keys(stats).forEach(element => {
+    //     let div = document.createElement('div');
+    //     let label = document.createElement('div');
+    //     let value = document.createElement('div');
+    //     div.classList.add('stats-container');
+    //     label.classList.add('label');
+    //     value.classList.add('value');
+    //     label.innerText = stats[element].label;
+    //     value.innerText = stats[element].value;
+    //     div.appendChild(value);
+    //     div.appendChild(label);
+    //     statsboxGames.appendChild(div);
+    // });
+    // // Graph
+    // const statsboxGraph = document.getElementById('statsboxGraph');
+    // statsboxGraph.innerHTML = '';
+    // let maxCount = 0;
+    // for (i = 1; i <= 9; i++) {
+    //     let actualCount = localStorage.getItem('stepsCount' + i) || 0;
+    //     if (actualCount > maxCount) {
+    //         maxCount = actualCount;
+    //     }
+    // }
+    // for (i = 1; i <= 9; i++) {
+    //     let div = document.createElement('div');
+    //     let label = document.createElement('div');
+    //     let bar = document.createElement('div');
+    //     let value = document.createElement('div');
+    //     div.classList.add('bar-container');
+    //     label.classList.add('label');
+    //     bar.classList.add('bar');
+    //     value.classList.add('value');
+    //     let actualCount = localStorage.getItem('stepsCount' + i) || 0;
+    //     label.innerText = i;
+    //     bar.style.width = Math.floor(90 * actualCount / maxCount) + '%';
+    //     value.innerText = actualCount;
+    //     div.appendChild(label);
+    //     bar.appendChild(value);
+    //     div.appendChild(bar);
+    //     statsboxGraph.appendChild(div);
+    // }
 }
 
 function statsboxClose() {
