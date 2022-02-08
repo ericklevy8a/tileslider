@@ -1,5 +1,5 @@
 /**
- * The Switcher Game
+ * The Tile Slider Game
  * Javascript code
  * @author Erick Levy <erickevyATgmailDOTcom>
  * @requires config.js The file with the structure for configuration's options (loaded in index.html)
