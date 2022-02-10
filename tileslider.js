@@ -20,6 +20,7 @@ const levelMovs = levelFactor * giRows * giCols;
 // Some paths
 const imagePath = './img/';
 const soundPath = './raw/';
+const langPath = './lang/'
 
 // Some default settings
 var gbPlaySounds = (localStorage.getItem('playSounds') === 'true');
@@ -30,7 +31,7 @@ var gsTileScheme = localStorage.getItem('tileScheme') || "brown";
 var gsTileImage = imagePath + config.styles[gsTileStyle].schemes[gsTileScheme].tileImage || imagePath + 'tile-light.png';
 var gsTileImageAlt = imagePath + config.styles[gsTileStyle].schemes[gsTileScheme].tileImageAlt || imagePath + 'tile-dark.png';
 
-// Default button sound
+// Default sounds
 var soundSlide = soundPath + config.styles[gsTileStyle].soundSlide || 'tile-slide.mp3';
 var soundError = soundPath + config.styles[gsTileStyle].soundError || 'tile-error.mp3';
 
@@ -40,20 +41,23 @@ var soundWinner = soundPath + 'winner_sound.mp3';
 var soundGameOver = soundPath + 'game_over_sound.mp3';
 
 // Collecions
-
 var allTiles = new Array();
 
 // Game control global variables
-
 var giSteps = 0;
 var gbGameOver = true;
 
+// Game statistics
+var stats = JSON.parse(localStorage.getItem('tilesliderStats')) || {
+    gamesPlayed: 0,
+    gamesEnded: 0,
+    gamesWon: 0,
+    performance: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+}
+
 // DOM elements mapping
-
 const appLongName = document.getElementById('appLongName');
-
 const lblText = document.getElementById('lblText');
-
 const btnStart = document.getElementById('btnStart');
 const btnHelp = document.getElementById('btnHelp');
 const btnAbout = document.getElementById('btnAbout');
@@ -62,12 +66,22 @@ const btnConfig = document.getElementById('btnConfig');
 
 const gameboardContainer = document.getElementById('gameboard-container');
 
+// i18n
+async function fetchTranslationsFor(lang) {
+    const response = await fetch(`./lang/${lang}.json`);
+    return await response.json();
+}
+
+var strings = {};
+
 // Initialization of the DOM interface
-function run() {
+async function run() {
+
+    strings = await fetchTranslationsFor(document.documentElement.lang);
 
     // Load strings
-    lblText.innerText = strings.pressStart || 'Press the START button...';
     appLongName.innerText = strings.appLongName || 'The Switcher Game';
+    lblText.innerText = strings.pressStart || 'Press the START button...';
     btnHelp.title = strings.btnHelp || 'Help';
     btnAbout.title = strings.btnAbout || 'About';
     btnStats.title = strings.btnStats || 'Statistics';
@@ -163,11 +177,11 @@ function tileButtonOnClick(e) {
 }
 
 function btnHelpOnClick() {
-    msgbox(strings.helpTitle, strings.helpMessage);
+    msgbox(strings.helpTitle, strings.helpMessage.join(' '));
 }
 
 function btnAboutOnClick() {
-    msgbox(strings.aboutTitle, strings.aboutMessage);
+    msgbox(strings.aboutTitle, strings.aboutMessage.join(' '));
 }
 
 function btnStatsOnClick() {
@@ -219,8 +233,8 @@ function restartGame() {
     lblText.textContent = strings.lblSteps.replace('?', giSteps);
     playSound(soundStart);
     // Increment the games played counter
-    let gamesPlayed = localStorage.getItem('gamesPlayed') || 0;
-    localStorage.setItem('gamesPlayed', ++gamesPlayed);
+    stats.gamesPlayed++;
+    localStorage.setItem('tilesliderStats', JSON.stringify(stats));
 }
 
 function scrambleTiles() {
@@ -331,20 +345,22 @@ function checkTiles() {
 
 function displayGameOver() {
     let msg = strings.gameOverScore.replace('?', giSteps);
+    stats.gamesEnded++;
     if (giSteps <= levelMovs) {
+        stats.gamesWon++;
         playSound(soundWinner);
         msg += strings.gameOverWin;
-        // Store the step counter for stats
-        let stepsCount = 'stepsCount' + giSteps;
-        let lastCount = localStorage.getItem(stepsCount) || 0;
-        localStorage.setItem(stepsCount, ++lastCount);
-        // Increment the games winned counter
-        let gamesWinned = localStorage.getItem('gamesWinned') || 0;
-        localStorage.setItem('gamesWinned', ++gamesWinned);
     } else {
         playSound(soundGameOver);
         msg += strings.gameOverTry;
     }
+    // Calc performance index
+    let index = Math.floor(Math.min(giSteps - 1, (levelMovs * 2)) / (levelMovs * 2) * 9);
+    if (index < 9) {
+        stats.performance[index]++;
+    }
+    // Store stats
+    localStorage.setItem('tilesliderStats', JSON.stringify(stats));
     // Use a timer to let the navigator update the display
     setTimeout(function () {
         msgbox(strings.gameOverTitle, msg);
@@ -497,7 +513,7 @@ function statsboxOpen() {
     // Load label strings
     document.getElementById('statsboxTitle').innerText = strings.statsboxTitle || 'Statistics';
     document.getElementById('statsboxGamesLabel').innerText = strings.statsboxGamesLabel || 'Games';
-    document.getElementById('statsboxGraphLabel').innerText = strings.statsboxGraphLabel || 'Steps Distribution Graph';
+    document.getElementById('statsboxGraphLabel').innerText = strings.statsboxGraphLabel || 'Perfomance Graph';
     statsboxOk.innerText = strings.btnOk;
     // Update and display options
     updateStats();
@@ -509,67 +525,64 @@ function statsboxOpen() {
 }
 
 function updateStats() {
-    // // Games
-    // const statsboxGames = document.getElementById('statsboxGames');
-    // const played = localStorage.getItem('gamesPlayed') || 0;
-    // const won = localStorage.getItem('gamesWinned') || 0;
-    // const percent = (played > 0) ? Math.round(100 * won / played) : 0;
-    // const stats = {
-    //     'gamesPlayed': {
-    //         'label': strings.gamesPlayed || 'Played',
-    //         'value': played
-    //     },
-    //     'gamesWinned': {
-    //         'label': strings.gamesWinned || 'Winned',
-    //         'value': won
-    //     },
-    //     'porcWinned': {
-    //         'label': strings.gamesPercentage || 'Percentage',
-    //         'value': percent + '%'
-    //     }
-    // };
-    // statsboxGames.innerHTML = '';
-    // Object.keys(stats).forEach(element => {
-    //     let div = document.createElement('div');
-    //     let label = document.createElement('div');
-    //     let value = document.createElement('div');
-    //     div.classList.add('stats-container');
-    //     label.classList.add('label');
-    //     value.classList.add('value');
-    //     label.innerText = stats[element].label;
-    //     value.innerText = stats[element].value;
-    //     div.appendChild(value);
-    //     div.appendChild(label);
-    //     statsboxGames.appendChild(div);
-    // });
-    // // Graph
-    // const statsboxGraph = document.getElementById('statsboxGraph');
-    // statsboxGraph.innerHTML = '';
-    // let maxCount = 0;
-    // for (i = 1; i <= 9; i++) {
-    //     let actualCount = localStorage.getItem('stepsCount' + i) || 0;
-    //     if (actualCount > maxCount) {
-    //         maxCount = actualCount;
-    //     }
-    // }
-    // for (i = 1; i <= 9; i++) {
-    //     let div = document.createElement('div');
-    //     let label = document.createElement('div');
-    //     let bar = document.createElement('div');
-    //     let value = document.createElement('div');
-    //     div.classList.add('bar-container');
-    //     label.classList.add('label');
-    //     bar.classList.add('bar');
-    //     value.classList.add('value');
-    //     let actualCount = localStorage.getItem('stepsCount' + i) || 0;
-    //     label.innerText = i;
-    //     bar.style.width = Math.floor(90 * actualCount / maxCount) + '%';
-    //     value.innerText = actualCount;
-    //     div.appendChild(label);
-    //     bar.appendChild(value);
-    //     div.appendChild(bar);
-    //     statsboxGraph.appendChild(div);
-    // }
+    // Games
+    const statsboxGames = document.getElementById('statsboxGames');
+    const statsElements = {
+        'gamesPlayed': {
+            'label': strings.gamesPlayed || 'Played',
+            'value': stats.gamesPlayed
+        },
+        'gamesEnded': {
+            'label': strings.gamesEnded || 'Ended',
+            'value': stats.gamesEnded
+        },
+        'gamesWon': {
+            'label': strings.gamesWon || 'Won',
+            'value': stats.gamesWon
+        }
+    };
+    statsboxGames.innerHTML = '';
+    Object.keys(statsElements).forEach(element => {
+        let div = document.createElement('div');
+        let label = document.createElement('div');
+        let value = document.createElement('div');
+        div.classList.add('stats-container');
+        label.classList.add('label');
+        value.classList.add('value');
+        label.innerText = statsElements[element].label;
+        value.innerText = statsElements[element].value;
+        div.appendChild(value);
+        div.appendChild(label);
+        statsboxGames.appendChild(div);
+    });
+    // Graph
+    const statsboxGraph = document.getElementById('statsboxGraph');
+    statsboxGraph.innerHTML = '';
+    let maxCount = 0;
+    for (i = 1; i <= 9; i++) {
+        let actualCount = stats.performance[i] || 0;
+        if (actualCount > maxCount) {
+            maxCount = actualCount;
+        }
+    }
+    for (i = 0; i < 9; i++) {
+        let div = document.createElement('div');
+        let label = document.createElement('div');
+        let bar = document.createElement('div');
+        let value = document.createElement('div');
+        div.classList.add('bar-container');
+        label.classList.add('label');
+        bar.classList.add('bar');
+        value.classList.add('value');
+        let actualCount = stats.performance[i] || 0;
+        label.innerText = ((10 - i)) + '0%';
+        bar.style.width = Math.floor(90 * actualCount / maxCount) + '%';
+        value.innerText = actualCount;
+        div.appendChild(label);
+        bar.appendChild(value);
+        div.appendChild(bar);
+        statsboxGraph.appendChild(div);
+    }
 }
 
 function statsboxClose() {

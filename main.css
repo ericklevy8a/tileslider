@@ -139,7 +139,7 @@ article {
     padding: 20px;
     border: 1px solid white;
     border-radius: 0.5em;
-    width: 360px;
+    width: 400px;
 }
 
 article h2 {
@@ -148,6 +148,12 @@ article h2 {
 
 article p {
     margin-bottom: 2em;
+    text-align: justify;
+}
+
+article label {
+    display: block;
+    margin-bottom: 1em;
 }
 
 article nav {
@@ -196,7 +202,7 @@ article nav {
 }
 
 #statsbox #statsboxGames .value {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 500;
     text-align: center;
 }
@@ -210,8 +216,10 @@ article nav {
 }
 
 #statsbox #statsboxGraph .label {
-    width: 24px;
-    text-align: center;
+    width: 30px;
+    font-size: 10px;
+    text-align: right;
+    margin-right: 4px;
 }
 
 #statsbox #statsboxGraph .bar {
