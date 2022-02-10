@@ -1,73 +1,53 @@
 const config = {
     "styles": {
-        "sw": {
-            "title": "Switch",
-            "cover": "ic_sw_red_on.png",
-            "sound": "switch_tone.mp3",
-            "colors": {
-                "red": {
-                    "title": "Red",
-                    "on": "ic_sw_red_on.png",
-                    "off": "ic_sw_red_off.png"
+        "tile": {
+            "title": "Tiles",
+            "cover": "tile125.png",
+            "soundSlide": "tile-slide.mp3",
+            "soundError": "tile-error.mp3",
+            "schemes": {
+                "brown": {
+                    "title": "Brown Wood",
+                    "tileImage": "tile-light.png",
+                    "tileImageAlt": "tile-dark.png",
+                    "fontFamily": "'Times New Roman', Times, serif",
+                    "color": "#963"
                 },
-                "grn": {
-                    "title": "Green",
-                    "on": "ic_sw_grn_on.png",
-                    "off": "ic_sw_grn_off.png"
-                },
-                "blu": {
-                    "title": "Blue",
-                    "on": "ic_sw_blu_on.png",
-                    "off": "ic_sw_blu_off.png"
-                },
-                "grn_red": {
-                    "title": "Green / Red",
-                    "on": "ic_sw_grn_on.png",
-                    "off": "ic_sw_red_off.png"
+                "metal": {
+                    "title": "Brushed Metal",
+                    "tileImage": "tile-metal.png",
+                    "tileImageAlt": "tile-metal.png",
+                    "fontFamily": "Garamond, Helvetica, sans-serif",
+                    "color": "#933"
                 }
+
             }
         },
-        "gl": {
-            "title": "Glowing",
-            "cover": "ic_gl_all_off.png",
-            "sound": "glow_tone.mp3",
-            "colors": {
-                "red": {
-                    "title": "Red",
-                    "on": "ic_gl_red_on.png",
-                    "off": "ic_gl_all_off.png"
+        "image": {
+            "title": "Image",
+            "cover": "400-image.jpg",
+            "soundSlide": "tile-slide.mp3",
+            "soundError": "tile-error.mp3",
+            "schemes": {
+                "image": {
+                    "title": "Pattern Image",
+                    "tileImage": "400-image.jpg"
                 },
-                "gre": {
-                    "title": "Green",
-                    "on": "ic_gl_grn_on.png",
-                    "off": "ic_gl_all_off.png"
+                "bluemarble": {
+                    "title": "Blue Marble",
+                    "tileImage": "bluemarble.jpg"
                 },
-                "blu": {
-                    "title": "Blue",
-                    "on": "ic_gl_blu_on.png",
-                    "off": "ic_gl_all_off.png"
-                }
-            }
-        },
-        "mt": {
-            "title": "Metallic",
-            "cover": "ic_mt_all_off.png",
-            "sound": "metal_tone.mp3",
-            "colors": {
-                "red": {
-                    "title": "Red",
-                    "on": "ic_mt_red_on.png",
-                    "off": "ic_mt_all_off.png"
+                "totoro": {
+                    "title": "Totoro",
+                    "tileImage": "400-totoro.jpg"
                 },
-                "grn": {
-                    "title": "Green",
-                    "on": "ic_mt_grn_on.png",
-                    "off": "ic_mt_all_off.png"
+                "cat": {
+                    "title": "Cat",
+                    "tileImage": "400-cat.jpg"
                 },
-                "blu": {
-                    "title": "Blue",
-                    "on": "ic_mt_blu_on.png",
-                    "off": "ic_mt_all_off.png"
+                "rosetta": {
+                    "title": "Rosetta",
+                    "tileImage": "400-rosetta.jpg"
                 }
             }
         }

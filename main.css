@@ -48,8 +48,9 @@ header label {
     border: none;
     font-family: 'Times New Roman', Times, serif;
     font-weight: 600;
-    text-shadow: #ccc 1px 1px 2px, #000 -1px -1px 2px;
+    text-shadow: #ccc 1px 1px 2px, #333 -1px -1px 2px;
     color: #963;
+    transition: all 0.125s ease-in-out;
 }
 
 #gameboard-container .tile-dark {
@@ -58,6 +59,15 @@ header label {
 
 #gameboard-container .hide {
     visibility: hidden;
+}
+
+/* TILES WITH A CLIPPED IMAGE */
+
+#gameboard-container .tile.image {
+    color: rgba(0, 0, 0, 0);
+    text-shadow: none;
+    background-image: url('./img/400-image.jpg'); /* to change from tile style */
+    background-size: 400%; /* to adjust where rows and columns are not 4x4 */
 }
 
 /* BUTTON BAR */

@@ -7,6 +7,8 @@
  */
 
 // Gameboard setup
+let giWidth = sessionStorage.getItem('gameboardWidth') || 400;
+let giHeight = sessionStorage.getItem('gameboardHeight') || 400;
 let giRows = sessionStorage.getItem('rows') || 4;
 let giCols = sessionStorage.getItem('cols') || 4;
 let giSpan = sessionStorage.getItem('span') || 1;
@@ -19,14 +21,18 @@ const levelMovs = levelFactor * giRows * giCols;
 const imagePath = './img/';
 const soundPath = './raw/';
 
-// Some defaults
+// Some default settings
 var gbPlaySounds = (localStorage.getItem('playSounds') === 'true');
-var tileStyle = localStorage.getItem('tileStyle') || "wood";
-var colorScheme = localStorage.getItem('colorScheme') || "brown";
+var gsTileStyle = localStorage.getItem('tileStyle') || "tile";
+var gsTileScheme = localStorage.getItem('tileScheme') || "brown";
+
+// Image for tiles
+var gsTileImage = imagePath + config.styles[gsTileStyle].schemes[gsTileScheme].tileImage || imagePath + 'tile-light.png';
+var gsTileImageAlt = imagePath + config.styles[gsTileStyle].schemes[gsTileScheme].tileImageAlt || imagePath + 'tile-dark.png';
 
 // Default button sound
-var soundClick = soundPath + 'switch_tone.mp3';
-var soundError = soundPath + 'buzzing_tone.mp3';
+var soundSlide = soundPath + config.styles[gsTileStyle].soundSlide || 'tile-slide.mp3';
+var soundError = soundPath + config.styles[gsTileStyle].soundError || 'tile-error.mp3';
 
 // Other sounds
 var soundStart = soundPath + 'start_sound.mp3';
@@ -80,10 +86,17 @@ function run() {
 
 // Game initialization
 function gameInitialize() {
+
     // Gameboard setup
+    gameboardContainer.style.width = giWidth + 'px';
+    gameboardContainer.style.height = giHeight + 'px';
+    gameboardContainer.innerHTML = '';
     let rows = giRows;
     let cols = giCols;
     let span = giSpan;
+    // Images for tiles
+    gsTileImage = imagePath + config.styles[gsTileStyle].schemes[gsTileScheme].tileImage;
+    gsTileImageAlt = imagePath + config.styles[gsTileStyle].schemes[gsTileScheme].tileImageAlt;
     // Initialize the tile matrix
     allTiles = new Array(rows);
     // Calculate tile size
@@ -112,10 +125,26 @@ function gameInitialize() {
             } else {
                 tile.id = 'tile-last';
             }
-            // Light-dark pattern
+            // Assign the tile style class
             tile.classList.add('tile');
-            if ((r + c + 1) % 2 == 0) {
-                tile.classList.add('tile-dark');
+            // Light-dark pattern
+            if (gsTileStyle == 'tile') {
+                // PATTERNS FOR ALT IMAGE
+                // Checkers: (r + c + 1) % 2 == 0
+                // Horizontal: (r + 1) % 2 == 0
+                // Vertical: (c + 1) % 2 == 0
+                if ((r + c + 1) % 2 == 0) {
+                    tile.style.backgroundImage = 'url(' + gsTileImageAlt + ')';
+                } else {
+                    tile.style.backgroundImage = 'url(' + gsTileImage + ')';
+                }
+                tile.style.fontFamily = config.styles[gsTileStyle].schemes[gsTileScheme].fontFamily || 'Times New Roman';
+                tile.style.color = config.styles[gsTileStyle].schemes[gsTileScheme].color || '#963';
+            } else if (gsTileStyle == 'image') {
+                tile.classList.add('image');
+                tile.style.backgroundImage = 'url(' + gsTileImage + ')';
+                tile.style.backgroundSize = (rows > cols ? rows : cols) * 100 + "%";
+                tile.style.backgroundPosition = "top ?px left ?px".replace('?', -tileHeight * r).replace('?', -tileWidth * c);
             }
             // Assign the tile click handler
             tile.addEventListener('click', tileButtonOnClick);
@@ -146,7 +175,22 @@ function btnStatsOnClick() {
 }
 
 function btnConfigOnClick() {
-    configboxOpen();
+    if (!gbGameOver) {
+        msgbox(strings.restartTitle,
+            strings.restartMessage,
+            [strings.btnOk, strings.btnCancel],
+            msgboxConfigConfirmation);
+    } else {
+        configboxOpen();
+    }
+}
+
+function msgboxConfigConfirmation(e) {
+    msgboxClose();
+    let btnPressed = e.target.innerText;
+    if (btnPressed === strings.btnOk) {
+        configboxOpen();
+    }
 }
 
 function btnStartOnClick() {
@@ -154,13 +198,13 @@ function btnStartOnClick() {
         msgbox(strings.restartTitle,
             strings.restartMessage,
             [strings.btnOk, strings.btnCancel],
-            msgboxRestart);
+            msgboxRestartConfirmation);
     } else {
         restartGame();
     }
 }
 
-function msgboxRestart(e) {
+function msgboxRestartConfirmation(e) {
     msgboxClose();
     let btnPressed = e.target.innerText;
     if (btnPressed === strings.btnOk) {
@@ -216,7 +260,7 @@ function slideTiles(tile) {
         // Invalid slide
         playSound(soundError);
     } else {
-        playSound(soundClick);
+        playSound(soundSlide);
         if (dR != 0) {
             // Row slide
             let sR = Math.sign(dR);
@@ -271,7 +315,6 @@ function updateSteps() {
 }
 
 function checkTiles() {
-    gbGameOver = true;
     let last = 0;
     let retval = 0;
     allTiles.forEach(row => {
@@ -359,10 +402,10 @@ function configboxOpen() {
         = strings.configboxTitle || 'Configuration';
     document.getElementById('configboxPlaySoundsLabel').innerText
         = strings.configboxPlaySoundsLabel || 'Play sounds:';
-    document.getElementById('configboxSwitchStyleLabel').innerText
-        = strings.configboxSwitchStyleLabel || 'Switch style:';
-    document.getElementById('configboxColorSchemeLabel').innerText
-        = strings.configboxColorSchemeLabel || 'Color scheme:';
+    document.getElementById('configboxTileStyleLabel').innerText
+        = strings.configboxTileStyleLabel || 'Tile style:';
+    document.getElementById('configboxTileSchemeLabel').innerText
+        = strings.configboxTileSchemeLabel || 'Tile scheme:';
     configboxOk.innerText = strings.btnOk;
     // Update and display options
     updatePlaySounds();
@@ -390,56 +433,59 @@ function imgPlaySoundsOnClick(e) {
 }
 
 function updateStyleOptions() {
-    let styleOptions = document.getElementById('configboxSwitchStyleOptions');
+    let styleOptions = document.getElementById('configboxTileStyleOptions');
     styleOptions.innerHTML = '';
     Object.keys(config.styles).forEach(element => {
-        // let img = document.createElement('img');
-        // img.tag = element;
-        // img.src = imagePath + config.styles[element].cover;
-        // img.title = config.styles[element].title;
-        // if (element === switchStyle) {
-        //     img.classList.add('selected');
-        // } else {
-        //     img.addEventListener('click', imgStyleOptionOnClick);
-        // }
-        // styleOptions.appendChild(img);
+        let img = document.createElement('img');
+        img.tag = element;
+        img.src = imagePath + config.styles[element].cover;
+        img.title = config.styles[element].title;
+        if (element === gsTileStyle) {
+            img.classList.add('selected');
+        } else {
+            img.addEventListener('click', imgStyleOptionOnClick);
+        }
+        styleOptions.appendChild(img);
     });
 }
 
 function imgStyleOptionOnClick(e) {
-    switchStyle = e.target.tag;
-    localStorage.setItem('switchStyle', switchStyle);
+    gsTileStyle = e.target.tag;
+    localStorage.setItem('tileStyle', gsTileStyle);
+    gsTileScheme = Object.keys(config.styles[gsTileStyle].schemes)[0];
+    localStorage.setItem('tileScheme', gsTileScheme);
     updateStyleOptions();
     updateColorOptions();
 }
 
 function updateColorOptions() {
-    // let colorOptions = document.getElementById('configboxColorSchemeOptions');
-    // colorOptions.innerHTML = '';
-    // Object.keys(config.styles[switchStyle].colors).forEach(element => {
-    //     let img = document.createElement('img');
-    //     img.tag = element;
-    //     img.src = imagePath + config.styles[switchStyle].colors[element].on;
-    //     img.title = config.styles[switchStyle].colors[element].title;
-    //     if (element === colorScheme) {
-    //         img.classList.add('selected');
-    //     } else {
-    //         img.addEventListener('click', imgColorOptionOnClick);
-    //     }
-    //     colorOptions.appendChild(img);
-    // });
+    let schemeOptions = document.getElementById('configboxTileSchemeOptions');
+    schemeOptions.innerHTML = '';
+    Object.keys(config.styles[gsTileStyle].schemes).forEach(element => {
+        let img = document.createElement('img');
+        img.tag = element;
+        img.src = imagePath + config.styles[gsTileStyle].schemes[element].tileImage;
+        img.title = config.styles[gsTileStyle].schemes[element].title;
+        if (element === gsTileScheme) {
+            img.classList.add('selected');
+        } else {
+            img.addEventListener('click', imgSchemeOptionOnClick);
+        }
+        schemeOptions.appendChild(img);
+    });
 }
 
-function imgColorOptionOnClick(e) {
-    colorScheme = e.target.tag;
-    localStorage.setItem('colorScheme', colorScheme);
+function imgSchemeOptionOnClick(e) {
+    gsTileScheme = e.target.tag;
+    localStorage.setItem('tileScheme', gsTileScheme);
     updateColorOptions();
 }
 
 function configboxClose() {
     const modal = document.getElementById('myModal');
     const configbox = document.getElementById('configbox');
-    //redrawButtons();
+    gameInitialize();
+    gbGameOver = true;
     modal.style.display = 'none';
     configbox.style.display = 'none';
 }
