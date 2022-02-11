@@ -1,0 +1,43 @@
+{
+    "appTitle": "TileSlider",
+    "appLongName": "Le Jeu de Curseur de Tuiles",
+    "btnStart": "Démarrage",
+    "btnHelp": "Aider",
+    "btnAbout": "À propos",
+    "btnStats": "Statistiques",
+    "btnConfig": "Configuration",
+    "btnOk": "D'accord",
+    "btnCancel": "Annuler",
+    "configboxTitle": "Configuration",
+    "configboxPlaySoundsLabel": "Jouer des sons :",
+    "configboxTileStyleLabel": "Styles de tuile :",
+    "configboxTileSchemeLabel": "Schéma de tuile :",
+    "statsboxTitle": "Statistiques",
+    "statsboxGamesLabel": "Jeux :",
+    "gamesPlayed": "Joués",
+    "gamesEnded": "Terminé",
+    "gamesWon": "Gagnés",
+    "statsboxGraphLabel": "Graphique des performances :",
+    "helpTitle": "Comment jouer",
+    "helpMessage": [
+        "Le but de ce jeu est de <b>METTRE EN ORDRE</b> toutes les tuiles.",
+        "Vous ne pouvez déplacer les pièces que sur le seul espace disponible.",
+        "Le jeu se terminera lorsque toutes les pièces seront arrangées.<br><br>",
+        "<b>Essayez de le résoudre en un minimum d'étapes !</b>"
+    ],
+    "aboutTitle": "À propos du jeu",
+    "aboutMessage": [
+        "© Copyright 2021 par Erick Levy<br><br>",
+        "Il s'agit d'un remake d'un vieux jeu simple codé d'abord en Java pour Android,",
+        "et porté en <b>HTML5, CSS3 et Javacript</b> pour ma zone de test de compétences Web.<br><br>",
+        "Merci d'avoir pris le temps d'apprendre et de jouer avec cette petite application."
+    ],
+    "restartTitle": "Jeu incomplet",
+    "restartMessage": "Êtes-vous sûr de redémarrer le jeu ?",
+    "lblSteps": "? étapes ...",
+    "gameOverTitle": "Jeu terminé",
+    "gameOverScore": "Vous y êtes parvenu en ? étapes ...<br><br>",
+    "gameOverWin": "Félicitations !",
+    "gameOverTry": "Tu peux faire mieux !",
+    "pressStart": "Appuyez sur le bouton de Démarrage ..."
+}

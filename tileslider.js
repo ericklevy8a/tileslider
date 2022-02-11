@@ -66,27 +66,19 @@ const btnConfig = document.getElementById('btnConfig');
 
 const gameboardContainer = document.getElementById('gameboard-container');
 
-// i18n
-async function fetchTranslationsFor(lang) {
-    const response = await fetch(`./lang/${lang}.json`);
-    return await response.json();
-}
-
-var strings = {};
-
 // Initialization of the DOM interface
 async function run() {
 
-    strings = await fetchTranslationsFor(document.documentElement.lang);
+    //strings = await fetchTranslationsFor();
 
     // Load strings
-    appLongName.innerText = strings.appLongName || 'The Switcher Game';
-    lblText.innerText = strings.pressStart || 'Press the START button...';
-    btnHelp.title = strings.btnHelp || 'Help';
-    btnAbout.title = strings.btnAbout || 'About';
-    btnStats.title = strings.btnStats || 'Statistics';
-    btnConfig.title = strings.btnConfig || 'Configuration';
-    btnStart.innerText = strings.btnStart || 'Start';
+    // appLongName.innerText = strings.appLongName || 'The Switcher Game';
+    // lblText.innerText = strings.pressStart || 'Press the START button...';
+    // btnHelp.title = strings.btnHelp || 'Help';
+    // btnAbout.title = strings.btnAbout || 'About';
+    // btnStats.title = strings.btnStats || 'Statistics';
+    // btnConfig.title = strings.btnConfig || 'Configuration';
+    // btnStart.innerText = strings.btnStart || 'Start';
 
     // Prepare event listeners
     btnStart.addEventListener('click', btnStartOnClick);
@@ -413,16 +405,6 @@ function configboxOpen() {
     const modal = document.getElementById('myModal');
     const configbox = document.getElementById('configbox');
     const configboxOk = document.getElementById('configboxOk');
-    // Load label strings
-    document.getElementById('configboxTitle').innerText
-        = strings.configboxTitle || 'Configuration';
-    document.getElementById('configboxPlaySoundsLabel').innerText
-        = strings.configboxPlaySoundsLabel || 'Play sounds:';
-    document.getElementById('configboxTileStyleLabel').innerText
-        = strings.configboxTileStyleLabel || 'Tile style:';
-    document.getElementById('configboxTileSchemeLabel').innerText
-        = strings.configboxTileSchemeLabel || 'Tile scheme:';
-    configboxOk.innerText = strings.btnOk;
     // Update and display options
     updatePlaySounds();
     updateStyleOptions();
@@ -510,11 +492,6 @@ function statsboxOpen() {
     const modal = document.getElementById('myModal');
     const statsbox = document.getElementById('statsbox');
     const statsboxOk = document.getElementById('statsboxOk');
-    // Load label strings
-    document.getElementById('statsboxTitle').innerText = strings.statsboxTitle || 'Statistics';
-    document.getElementById('statsboxGamesLabel').innerText = strings.statsboxGamesLabel || 'Games';
-    document.getElementById('statsboxGraphLabel').innerText = strings.statsboxGraphLabel || 'Perfomance Graph';
-    statsboxOk.innerText = strings.btnOk;
     // Update and display options
     updateStats();
     // Add click event to Ok button to close
@@ -590,6 +567,47 @@ function statsboxClose() {
     const statsbox = document.getElementById('statsbox');
     modal.style.display = 'none';
     statsbox.style.display = 'none';
+}
+
+//
+// i18n (internacionalization) implementation
+//
+const gsDefaultLanguage = document.documentElement.lang;
+let gsLanguage;
+var strings = {};
+
+document.addEventListener('DOMContentLoaded', () => {
+    setLanguage(gsDefaultLanguage);
+});
+
+async function setLanguage(newLanguage) {
+    if (newLanguage == gsLanguage) return;
+    const newStrings = await fetchTranslationsFor(newLanguage);
+    gsLanguage = newLanguage;
+    strings = newStrings;
+    translatePage();
+}
+
+async function fetchTranslationsFor(language) {
+    const response = await fetch(`./lang/${language}.json`);
+    return await response.json();
+}
+
+function translatePage() {
+    document
+        .querySelectorAll('[data-i18n-key]')
+        .forEach(translateElement);
+}
+
+function translateElement(element) {
+    const key = element.getAttribute('data-i18n-key');
+    const attr = element.getAttribute('data-i18n-attr') || false;
+    const translation = strings[key];
+    if (attr) {
+        element.setAttribute(attr, translation);
+    } else {
+        element.innerText = translation;
+    }
 }
 
 // Executes initializations

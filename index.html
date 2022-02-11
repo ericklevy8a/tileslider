@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tile Slider</title>
+    <title data-i18-key="appTitle">Tile Slider</title>
     <link type="image/x-icon" rel="icon" href="favicon.ico">
     <link type="text/css" rel="stylesheet" href="main.css">
 </head>
@@ -13,8 +13,8 @@
 <body>
 
     <header>
-        <h1 id="appLongName">The Tile Slider Game</h1>
-        <label id="lblText">Press the START button...</label>
+        <h1 data-i18n-key="appLongName">The Tile Slider Game</h1>
+        <label id="lblText" data-i18n-key="pressStart">Press the START button...</label>
     </header>
 
     <main id="gameboard-container">
@@ -22,11 +22,15 @@
     </main>
 
     <nav>
-        <img id="btnHelp" class="icon" title="Help" src=".\img\ic_app_help.png"></img>
-        <img id="btnAbout" class="icon" title="About" src=".\img\ic_app_info.png"></img>
-        <button id="btnStart">Start</button>
-        <img id="btnStats" class="icon" title="Statistics" src=".\img\ic_app_stats.png"></img>
-        <img id="btnConfig" class="icon" title="Configuration" src=".\img\ic_app_config.png"></img>
+        <img id="btnHelp" data-i18n-key="btnHelp" data-i18n-attr="title" title="Help" class="icon"
+            src=".\img\ic_app_help.png"></img>
+        <img id="btnAbout" data-i18n-key="btnAbout" data-i18n-attr="title" title="About" class="icon"
+            src=".\img\ic_app_info.png"></img>
+        <button id="btnStart" data-i18n-key="btnStart">Start</button>
+        <img id="btnStats" data-i18n-key="btnStats" data-i18n-attr="title" title="Statistics" class="icon"
+            src=".\img\ic_app_stats.png"></img>
+        <img id="btnConfig" data-i18n-key="btnConfig" data-i18n-attr="title" title="Configuration" class="icon"
+            src=".\img\ic_app_config.png"></img>
     </nav>
 
     <aside id="myModal" class="modal">
@@ -40,31 +44,31 @@
             </article>
 
             <article id="configbox">
-                <h2 id="configboxTitle"></h2>
-                <label id="configboxPlaySoundsLabel"></label>
+                <h2 data-i18n-key="configboxTitle">Settings</h2>
+                <label data-i18n-key="configboxPlaySoundsLabel">Play Sounds:</label>
                 <img id="imgPlaySounds">
                 <br>
-                <label id="configboxTileStyleLabel"></label>
+                <label data-i18n-key="configboxTileStyleLabel"></label>
                 <div id="configboxTileStyleOptions"></div>
                 <br>
-                <label id="configboxTileSchemeLabel"></label>
+                <label data-i18n-key="configboxTileSchemeLabel"></label>
                 <div id="configboxTileSchemeOptions"></div>
                 <br>
                 <nav>
-                    <button id="configboxOk"></button>
+                    <button id="configboxOk" data-i18n-key="btnOk">Ok</button>
                 </nav>
             </article>
 
             <article id="statsbox">
-                <h2 id="statsboxTitle"></h2>
-                <label id="statsboxGamesLabel"></label>
+                <h2 data-i18n-key="statsboxTitle"></h2>
+                <label data-i18n-key="statsboxGamesLabel"></label>
                 <div id="statsboxGames"></div>
                 <br>
-                <label id="statsboxGraphLabel"></label>
+                <label data-i18n-key="statsboxGraphLabel"></label>
                 <div id="statsboxGraph"></div>
                 <br>
                 <nav>
-                    <button id="statsboxOk"></button>
+                    <button id="statsboxOk" data-i18n-key="btnOk">Ok</button>
                 </nav>
             </article>
 
