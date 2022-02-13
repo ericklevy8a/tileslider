@@ -3,12 +3,11 @@
  * Javascript code
  * @author Erick Levy <erickevyATgmailDOTcom>
  * @requires config.js The file with the structure for configuration's options (loaded in index.html)
- * @requires strings-xx.js The file with the languaje localized strings where xx: language code [en, es, fr, jp, ...]
  */
 
 // Gameboard setup
-let giWidth = sessionStorage.getItem('gameboardWidth') || 400;
 let giHeight = sessionStorage.getItem('gameboardHeight') || 400;
+let giWidth = sessionStorage.getItem('gameboardWidth') || 400;
 let giRows = sessionStorage.getItem('rows') || 4;
 let giCols = sessionStorage.getItem('cols') || 4;
 let giSpan = sessionStorage.getItem('span') || 1;
@@ -67,18 +66,7 @@ const btnConfig = document.getElementById('btnConfig');
 const gameboardContainer = document.getElementById('gameboard-container');
 
 // Initialization of the DOM interface
-async function run() {
-
-    //strings = await fetchTranslationsFor();
-
-    // Load strings
-    // appLongName.innerText = strings.appLongName || 'The Switcher Game';
-    // lblText.innerText = strings.pressStart || 'Press the START button...';
-    // btnHelp.title = strings.btnHelp || 'Help';
-    // btnAbout.title = strings.btnAbout || 'About';
-    // btnStats.title = strings.btnStats || 'Statistics';
-    // btnConfig.title = strings.btnConfig || 'Configuration';
-    // btnStart.innerText = strings.btnStart || 'Start';
+function run() {
 
     // Prepare event listeners
     btnStart.addEventListener('click', btnStartOnClick);
@@ -117,7 +105,6 @@ function gameInitialize() {
             // Create a button as the tile element
             var tile = document.createElement('button');
             let i = rows * r + c + 1;
-            tile.innerText = i;
             tile.value = i;
             tile.style.width = tileWidth + 'px';
             tile.style.height = tileHeight + 'px';
@@ -133,24 +120,30 @@ function gameInitialize() {
             }
             // Assign the tile style class
             tile.classList.add('tile');
-            // Light-dark pattern
+            // Tile style
             if (gsTileStyle == 'tile') {
-                // PATTERNS FOR ALT IMAGE
-                // Checkers: (r + c + 1) % 2 == 0
-                // Horizontal: (r + 1) % 2 == 0
-                // Vertical: (c + 1) % 2 == 0
+                // Alternate tile patterns
+                //  + Checkers: (r + c + 1) % 2 == 0
+                //  + Horizontal: (r + 1) % 2 == 0
+                //  + Vertical: (c + 1) % 2 == 0
                 if ((r + c + 1) % 2 == 0) {
                     tile.style.backgroundImage = 'url(' + gsTileImageAlt + ')';
                 } else {
                     tile.style.backgroundImage = 'url(' + gsTileImage + ')';
                 }
+                // Number font family and color
+                tile.innerText = i;
                 tile.style.fontFamily = config.styles[gsTileStyle].schemes[gsTileScheme].fontFamily || 'Times New Roman';
                 tile.style.color = config.styles[gsTileStyle].schemes[gsTileScheme].color || '#963';
+                tile.style.fontSize = Math.floor(0.5 * Math.min(tileHeight, tileWidth)) + 'px';
             } else if (gsTileStyle == 'image') {
+                // Assign the background image, size, and position in each tile
                 tile.classList.add('image');
                 tile.style.backgroundImage = 'url(' + gsTileImage + ')';
-                tile.style.backgroundSize = (rows > cols ? rows : cols) * 100 + "%";
-                tile.style.backgroundPosition = "top ?px left ?px".replace('?', -tileHeight * r).replace('?', -tileWidth * c);
+                tile.style.backgroundSize = (rows > cols ? rows : cols) * 100 + "%"; // ToDo: Check how works
+                tile.style.backgroundPosition = "top ?px left ?px"
+                    .replace('?', -tileHeight * r)
+                    .replace('?', -tileWidth * c);
             }
             // Assign the tile click handler
             tile.addEventListener('click', tileButtonOnClick);
@@ -219,32 +212,39 @@ function msgboxRestartConfirmation(e) {
 }
 
 function restartGame() {
+    document.getElementById('tile-last').classList.add('hide');
+    // Scramble tiles until some sort of complexity
     do { scrambleTiles() } while (checkTiles() < ((giRows + giCols) / 2));
+    // Reset game control variables, steps label and play start sound
     gbGameOver = false;
     giSteps = 0;
     lblText.textContent = strings.lblSteps.replace('?', giSteps);
     playSound(soundStart);
-    // Increment the games played counter
+    // Increment the games played counter and save stats
     stats.gamesPlayed++;
     localStorage.setItem('tilesliderStats', JSON.stringify(stats));
 }
 
 function scrambleTiles() {
+    // Backup the state of sounds playing game flag before turn it off
     let tempPlaySounds = gbPlaySounds;
     gbPlaySounds = false;
+    // Use the levelMovs value to scramble the tiles
     for (var i = 0; i <= levelMovs; i++) {
+        // Localize the last tile (the hide one) and extract row and column
         let last = document.getElementById('tile-last');
         let row = parseInt(last.dataset.row);
         let col = parseInt(last.dataset.col);
+        // Randomize the type of move: 50% row type, 50% column type
         if (Math.random() < 0.5) {
-            // Same row random col
+            // Last tile same row other col
             let colRnd = col;
             while (colRnd == col) {
                 colRnd = Math.floor(giCols * Math.random());
             }
             slideTiles(allTiles[row][colRnd]);
         } else {
-            // Random row same col
+            // Last tile other row same col
             let rowRnd = row;
             while (rowRnd == row) {
                 rowRnd = Math.floor(giRows * Math.random());
@@ -252,8 +252,8 @@ function scrambleTiles() {
             slideTiles(allTiles[rowRnd][col]);
         }
     }
+    // Restore the state of sound playing game flag
     gbPlaySounds = tempPlaySounds;
-    document.getElementById('tile-last').classList.add('hide');
 }
 
 function slideTiles(tile) {
@@ -262,13 +262,15 @@ function slideTiles(tile) {
     let tC = tile.dataset.col - 0;
     var dR = lastTile.dataset.row - tR;
     var dC = lastTile.dataset.col - tC;
+    // Validate tile movement
     if ((dR == 0 && dC == 0) || (dR !== 0 && dC !== 0)) {
-        // Invalid slide
+        // Not valid
         playSound(soundError);
     } else {
+        // Valid
         playSound(soundSlide);
         if (dR != 0) {
-            // Row slide
+            // Slide the tile(s) by row
             let sR = Math.sign(dR);
             while (dR != 0) {
                 let tile1 = allTiles[tR + dR][tC];
@@ -277,7 +279,7 @@ function slideTiles(tile) {
                 dR -= sR;
             }
         } else {
-            // Column slide
+            // Slide the tile(s) by column
             let sC = Math.sign(dC);
             while (dC != 0) {
                 let tile1 = allTiles[tR][tC + dC];
@@ -290,20 +292,22 @@ function slideTiles(tile) {
 }
 
 function swapTiles(tile1, tile2) {
-    // Swap array position
+    // Backup tile1 data and style
     let tileTemp = tile1;
     let rowTemp = tile1.dataset.row;
     let colTemp = tile1.dataset.col;
     let topTemp = tile1.style.top;
     let leftTemp = tile1.style.left;
+    // Move tile2 to the place of tile1 in the array
     allTiles[tile1.dataset.row][tile1.dataset.col] = tile2;
+    // Move tile1 backup to the place of tile2 in the array
     allTiles[tile2.dataset.row][tile2.dataset.col] = tileTemp;
-    // Swap rows and cols
+    // Swap row and col data to reflect new positions in the array
     tile1.dataset.row = tile2.dataset.row;
     tile2.dataset.row = rowTemp;
     tile1.dataset.col = tile2.dataset.col;
     tile2.dataset.col = colTemp;
-    // Change positions in the gameboard
+    // Swap position in the gameboard (animated with CSS)
     tile1.style.left = tile2.style.left;
     tile2.style.left = leftTemp;
     tile1.style.top = tile2.style.top;
@@ -311,10 +315,14 @@ function swapTiles(tile1, tile2) {
 }
 
 function updateSteps() {
+    // Increment the steps counter global var
     giSteps++;
+    // Refresh the steps label string with the new value in screen
     lblText.textContent = strings.lblSteps.replace('?', giSteps);
+    // Detect the game over condition and set the global flag
     gbGameOver = (checkTiles() == 0);
     if (gbGameOver) {
+        // Un-hide the last tile and launch the game over display
         document.getElementById('tile-last').classList.remove('hide');
         displayGameOver();
     }
@@ -323,9 +331,11 @@ function updateSteps() {
 function checkTiles() {
     let last = 0;
     let retval = 0;
+    // Check all the tiles by row and column
     allTiles.forEach(row => {
         row.forEach(tile => {
             let value = parseInt(tile.value);
+            // If values are in disorder increment the couter
             if (value < last) {
                 retval++;
             }
@@ -337,7 +347,9 @@ function checkTiles() {
 
 function displayGameOver() {
     let msg = strings.gameOverScore.replace('?', giSteps);
+    // Update game stats values
     stats.gamesEnded++;
+    // Use a simple winning or losing criteria
     if (giSteps <= levelMovs) {
         stats.gamesWon++;
         playSound(soundWinner);
@@ -346,7 +358,7 @@ function displayGameOver() {
         playSound(soundGameOver);
         msg += strings.gameOverTry;
     }
-    // Calc performance index
+    // Calculate a performance index
     let index = Math.floor(Math.min(giSteps - 1, (levelMovs * 2)) / (levelMovs * 2) * 9);
     if (index < 9) {
         stats.performance[index]++;
@@ -367,6 +379,23 @@ function playSound(sound) {
     }
 }
 
+/**
+ * Modal message box dialog.
+ *
+ * Displays a message in a modal dialog box, waits for the user to click a button,
+ * and send the button click event to the function especified to process the user choice.
+ *
+ * NOTE: The msgboxClose function need to be called to close the dialog box.
+ *
+ * Parameters:
+ * @param {string} titleText    Required. String expression to display as a header.
+ * @param {string} msgText      Required. String expression with the main meesage.
+ * @param {array} arrActions    Optional. String or array of strings with the label
+ *                              of the buttons to display. If omited, only an Ok button
+ *                              will be displayed.
+ * @param {function} titleText  A lambda function to process the buttons click event.
+ *                              If omitted, the msgboxClose function will be called.
+ */
 function msgbox(titleText, msgText, arrActions = strings.btnOk, fnOnClick = msgboxClose) {
     const modal = document.getElementById('myModal');
     const msgbox = document.getElementById('msgbox');
@@ -401,6 +430,12 @@ function msgboxClose() {
     msgbox.style.display = 'none';
 }
 
+/**
+ * Modal configuration box dialog.
+ *
+ * Displays a configuration modal dialog box, call the update and display options functions,
+ * and let the user change settings.
+ */
 function configboxOpen() {
     const modal = document.getElementById('myModal');
     const configbox = document.getElementById('configbox');
@@ -488,6 +523,11 @@ function configboxClose() {
     configbox.style.display = 'none';
 }
 
+/**
+ * Modal statistics box dialog.
+ *
+ * Displays a statistics modal dialog box, call the update and display statistics functions.
+ */
 function statsboxOpen() {
     const modal = document.getElementById('myModal');
     const statsbox = document.getElementById('statsbox');
@@ -572,6 +612,7 @@ function statsboxClose() {
 //
 // i18n (internacionalization) implementation
 //
+
 const gsDefaultLanguage = document.documentElement.lang;
 let gsLanguage;
 var strings = {};

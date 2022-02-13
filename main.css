@@ -70,6 +70,10 @@ header label {
     background-size: 400%; /* to adjust where rows and columns are not 4x4 */
 }
 
+#gameboard-container .tile.image span {
+    display: none;
+}
+
 /* BUTTON BAR */
 
 nav {
