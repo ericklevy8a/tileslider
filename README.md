@@ -26,3 +26,7 @@ Some of the frontend elements used in this little project:
 * Using local storage to save game settings and statistics
 * Javascript collections, event listeners, timers, lambdas
 * And so on...
+
+![Screenshot 1](Screenshot_1.jpg)
+
+![Screenshot 2](Screenshot_2.jpg)
